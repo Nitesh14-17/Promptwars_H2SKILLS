@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Democracy Assistant - Election Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(15, 23, 42, 1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, rgba(56, 189, 248, 0.1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(15, 23, 42, 1) 0, transparent 50%);
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 1rem;
+            width: 100%;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: flex;
+            gap: 2rem;
+            max-width: 1000px;
+            width: 90%;
+            margin-bottom: 4rem;
+        }
+
+        .timeline {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 20px;
+            bottom: 20px;
+            width: 2px;
+            background: var(--glass-border);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .step:hover, .step.active {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .assistant-panel {
+            flex: 1.5;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .assistant-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .assistant-status {
+            font-size: 0.8rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
+
+        .message-box {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 200px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tips {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .timeline::before {
+                display: none;
+            }
+            .step {
+                background: var(--glass-bg);
+                padding: 1rem;
+                border-radius: 12px;
+                border: 1px solid var(--glass-border);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Election Assistant</h1>
+        <p class="subtitle">Your interactive guide to the democratic process.</p>
+    </header>
+
+    <div class="container">
+        <div class="timeline" id="timeline">
+            <!-- Steps generated by JS -->
+        </div>
+
+        <div class="assistant-panel">
+            <div class="chat-header">
+                <div class="avatar">EA</div>
+                <div>
+                    <div class="assistant-title">Election Assistant</div>
+                    <div class="assistant-status"><div class="pulse"></div> Ready to help</div>
+                </div>
+            </div>
+            <div class="message-box" id="message-box">
+                Welcome! I am your Election Assistant. Select a step from the timeline on the left to learn more about the election process, timelines, and what you need to do to participate.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const electionData = [
+            {
+                title: "Voter Registration",
+                content: "Before you can vote, you must be registered. Every region has different deadlines, often ranging from 15 to 30 days before Election Day. Some places offer same-day voter registration.",
+                tip: "Check your registration status early! Even if you think you're registered, it's best to verify your address and polling location online."
+            },
+            {
+                title: "Researching Candidates",
+                content: "Take time to learn about the candidates and the issues on your ballot. Look at voting records, debate performances, and policy proposals. Local elections often have the most direct impact on your daily life.",
+                tip: "Use non-partisan resources and voter guides to get unbiased information about who and what is on your ballot."
+            },
+            {
+                title: "Voting Options",
+                content: "Depending on where you live, you might have several options: voting by mail (absentee voting), early in-person voting, or voting on Election Day. Each method has specific rules and deadlines.",
+                tip: "If voting by mail, request your ballot as soon as possible and follow all instructions carefully (like signing the envelope) so your vote counts."
+            },
+            {
+                title: "Casting Your Ballot",
+                content: "On Election Day or during early voting, go to your designated polling place. Bring appropriate ID if required by your area. Once there, you'll receive your ballot to cast your vote.",
+                tip: "If you are in line when the polls close, stay in line! You still have the right to vote."
+            },
+            {
+                title: "Results & Certification",
+                content: "After polls close, election officials begin counting votes. Unofficial results are often announced on election night, but official certification can take days or weeks as mail-in and provisional ballots are verified.",
+                tip: "Patience is key. A delayed result usually means officials are carefully verifying every legal vote."
+            }
+        ];
+
+        const timelineEl = document.getElementById('timeline');
+        const messageBoxEl = document.getElementById('message-box');
+
+        function init() {
+            electionData.forEach((step, index) => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'step';
+                stepEl.onclick = () => selectStep(index);
+
+                stepEl.innerHTML = `
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-title">${step.title}</div>
+                `;
+                timelineEl.appendChild(stepEl);
+            });
+        }
+
+        function selectStep(index) {
+            // Update active state
+            document.querySelectorAll('.step').forEach((el, i) => {
+                if (i === index) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+
+            // Update content with animation
+            messageBoxEl.classList.remove('fade-in');
+            void messageBoxEl.offsetWidth; // trigger reflow
+            
+            const data = electionData[index];
+            messageBoxEl.innerHTML = `
+                <h3 style="margin-top:0; color: var(--accent);">${data.title}</h3>
+                <p>${data.content}</p>
+                <div class="tips"><strong>Pro Tip:</strong> ${data.tip}</div>
+            `;
+            
+            messageBoxEl.classList.add('fade-in');
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
