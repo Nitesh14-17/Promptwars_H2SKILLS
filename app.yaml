@@ -1,0 +1,19 @@
+runtime: python39
+# Note: App Engine requires a runtime, even for purely static sites. 
+# We use python39 as a lightweight standard.
+
+handlers:
+# Serve the index.html file for the root URL
+- url: /
+  static_files: index.html
+  upload: index.html
+
+# Serve specific static file types (like CSS and JS)
+- url: /(.*\.(css|js|html|png|jpg|jpeg|gif|ico|svg))$
+  static_files: \1
+  upload: .*\.(css|js|html|png|jpg|jpeg|gif|ico|svg)$
+
+# Catch-all to route any other request to index.html (useful for simple routing or SPAs)
+- url: /.*
+  static_files: index.html
+  upload: index.html
